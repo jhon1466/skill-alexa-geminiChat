@@ -23,13 +23,13 @@ logger.setLevel(logging.INFO)
 
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-# URL do endpoint da API
+# URL del endpoint de la API
 url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={}".format(GOOGLE_API_KEY)
-# Cabeçalhos para a requisição
+# Cabeceras para la petición
 headers = {
     'Content-Type': 'application/json',
 }
-# Dados (payload) para serem enviados na requisição POST
+# Datos (payload) para enviar en la petición POST
 data = {
     "contents": [{
         "role":"user",
@@ -40,7 +40,7 @@ data = {
 }
 
 class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
+    """Handler para el lanzamiento de la skill."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
 
@@ -48,15 +48,15 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        data["contents"][0]["parts"][0]["text"] = "Você será minha assistente de I.A. Te daria comandos e iremos interagir conforme lhe orientar e treinar."
+        data["contents"][0]["parts"][0]["text"] = "Serás mi asistente de I.A. Te daré comandos y vamos a interactuar según te oriente y entrene."
         response = requests.post(url, json=data, headers=headers)
         if response.status_code == 200:
             response_data = response.json()
             text = (response_data.get("candidates", [{}])[0]
                 .get("content", {})
                 .get("parts", [{}])[0]
-                .get("text", "Texto não encontrado"))
-            speak_output = text + " Como posso te ajudar?"
+                .get("text", "Texto no encontrado"))
+            speak_output = text + " ¿En qué puedo ayudarte?"
             response_text = {
                 "role": "model",
                 "parts": [{
@@ -65,7 +65,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             }
             data["contents"].append(response_text)
         else:
-            speak_output = "Erro na requsição"
+            speak_output = "Error en la solicitud."
             
         return (
             handler_input.response_builder
@@ -76,7 +76,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 
 class ChatIntentHandler(AbstractRequestHandler):
-    """Handler for Chat Intent."""
+    """Handler para el intent de chat."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("ChatIntent")(handler_input)
@@ -97,7 +97,7 @@ class ChatIntentHandler(AbstractRequestHandler):
             text = (response_data.get("candidates", [{}])[0]
                 .get("content", {})
                 .get("parts", [{}])[0]
-                .get("text", "Texto não encontrado"))
+                .get("text", "Texto no encontrado"))
             speak_output = text
             response_text = {
                 "role": "model",
@@ -107,18 +107,18 @@ class ChatIntentHandler(AbstractRequestHandler):
             }
             data["contents"].append(response_text)
         else:
-            speak_output = "Não obtive uma resposta para sua solicitação"
+            speak_output = "No obtuve una respuesta para tu solicitud."
 
         return (
             handler_input.response_builder
                 .speak(speak_output)
-                .ask("Alguma outra pergunta?")
+                .ask("¿Tienes otra pregunta?")
                 .response
         )
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
-    """Single handler for Cancel and Stop Intent."""
+    """Handler para Cancelar y Detener."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
@@ -126,7 +126,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Goodbye!"
+        speak_output = "¡Hasta luego!"
 
         return (
             handler_input.response_builder
@@ -136,10 +136,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
 
 class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Generic error handling to capture any syntax or routing errors. If you receive an error
-    stating the request handler chain is not found, you have not implemented a handler for
-    the intent being invoked or included it in the skill builder below.
-    """
+    """Manejo genérico de errores para capturar cualquier error de sintaxis o de enrutamiento."""
     def can_handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> bool
         return True
@@ -148,7 +145,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
 
-        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
+        speak_output = "Lo siento, tuve problemas para procesar tu solicitud. Por favor, intenta de nuevo."
 
         return (
             handler_input.response_builder
@@ -157,10 +154,9 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
                 .response
         )
 
-# The SkillBuilder object acts as the entry point for your skill, routing all request and response
-# payloads to the handlers above. Make sure any new handlers or interceptors you've
-# defined are included below. The order matters - they're processed top to bottom.
-
+# El objeto SkillBuilder actúa como punto de entrada para tu skill, enruta todas las peticiones y respuestas
+# a los handlers definidos arriba. Asegúrate de incluir cualquier nuevo handler o interceptor aquí.
+# El orden importa: se procesan de arriba hacia abajo.
 
 sb = SkillBuilder()
 
