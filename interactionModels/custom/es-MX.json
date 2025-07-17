@@ -1,0 +1,44 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "name": "ChatIntent",
+          "samples": [
+            "{query}",
+            "Dime sobre {query}",
+            "Explica {query}",
+            "Que es {query}",
+            "Que significa {query}",
+            "Puedes explicarme {query}",
+            "Dame informacion sobre {query}"
+          ]
+        }
+      ],
+      "types": [],
+      "invocationName": "asistente gemini"
+    }
+  }
+} 
